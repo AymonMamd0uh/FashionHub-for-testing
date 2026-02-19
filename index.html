@@ -27,6 +27,8 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
+position:relative;
+z-index:1000;
 }
 
 header h1{
@@ -100,10 +102,43 @@ box-shadow:-5px 0 15px rgba(0,0,0,0.2);
 padding:20px;
 transition:0.4s;
 overflow-y:auto;
+z-index:1001;
 }
 
 .cart-section.active{
 right:0;
+}
+
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+display:none;
+z-index:1000;
+}
+
+.overlay.active{
+display:block;
+}
+
+.cart-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.close-btn{
+background:none;
+border:none;
+font-size:22px;
+cursor:pointer;
+color:#ff2e63;
+width:auto;
+padding:0;
 }
 
 .cart-item{
@@ -131,7 +166,7 @@ width:100%;
 
 <header>
 <h1>FashionHub 🛍️</h1>
-<div class="cart-icon" onclick="toggleCart()">
+<div class="cart-icon" onclick="openCart()">
 Cart (<span id="cartCount">0</span>)
 </div>
 </header>
@@ -162,11 +197,20 @@ Cart (<span id="cartCount">0</span>)
 </div>
 </div>
 
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+
 <div class="cart-section" id="cartSection">
+
+<div class="cart-header">
 <h2>Your Cart</h2>
+<button class="close-btn" onclick="closeCart()">✖</button>
+</div>
+
 <div id="cartItems"></div>
 <p class="total">Total: $<span id="total">0</span></p>
 <button onclick="checkout()">Checkout</button>
+
 </div>
 
 <script>
@@ -175,8 +219,14 @@ let cart = [];
 let stock = 5;
 const price = 40;
 
-function toggleCart(){
-document.getElementById("cartSection").classList.toggle("active");
+function openCart(){
+document.getElementById("cartSection").classList.add("active");
+document.getElementById("overlay").classList.add("active");
+}
+
+function closeCart(){
+document.getElementById("cartSection").classList.remove("active");
+document.getElementById("overlay").classList.remove("active");
 }
 
 function addToCart(){
@@ -185,26 +235,14 @@ let size = document.getElementById("size").value;
 let quantity = document.getElementById("quantity").value;
 let message = document.getElementById("message");
 
-// BUG 1: No validation for empty size
-
-// BUG 2: No validation for empty quantity
-
-// BUG 3: Allows negative quantity
-
-// BUG 4: Allows decimal quantity
-
-// BUG 5: Allows adding more than available stock
-
-// BUG 6: Stock decreases even if quantity invalid
+// BUGS التعليمية مازالت موجودة
 
 stock -= quantity;
 
 cart.push({size, quantity});
 
-// BUG 7: Cart count incorrect (counts items not total quantity)
 document.getElementById("cartCount").innerText = cart.length;
 
-// BUG 8: Total price calculated incorrectly (string multiplication issue)
 updateCart();
 
 document.getElementById("stock").innerText = stock;
@@ -219,9 +257,6 @@ let total=0;
 
 cart.forEach((item,index)=>{
 let subtotal = item.quantity * price;
-
-// BUG 9: No validation for invalid subtotal
-// BUG 10: Remove button restores wrong stock amount
 
 cartItems.innerHTML += `
 <div class="cart-item">
@@ -239,23 +274,12 @@ document.getElementById("total").innerText = total;
 }
 
 function removeItem(index){
-
-// BUG 11: Stock not restored properly
 cart.splice(index,1);
-
-// BUG 12: Cart count not updated after remove
 updateCart();
 }
 
 function checkout(){
-
-// BUG 13: Allows checkout with empty cart
-
 alert("Order placed successfully!");
-
-// BUG 14: Cart not cleared after checkout
-
-// BUG 15: Stock not reset logic missing
 }
 
 </script>
