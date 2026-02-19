@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FashionHub</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#ff758c,#ff7eb3);
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+header{
+background:white;
+padding:15px 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+header h1{
+color:#ff2e63;
+}
+
+.cart-icon{
+background:#ff2e63;
+color:white;
+padding:8px 15px;
+border-radius:20px;
+cursor:pointer;
+}
+
+.container{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.product-card{
+background:white;
+width:350px;
+border-radius:20px;
+padding:25px;
+box-shadow:0 15px 30px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.product-card img{
+width:100%;
+border-radius:15px;
+margin-bottom:15px;
+}
+
+.price{
+font-size:22px;
+color:#ff2e63;
+margin:10px 0;
+}
+
+select,input{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:#ff2e63;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.cart-section{
+position:fixed;
+right:-400px;
+top:0;
+width:350px;
+height:100%;
+background:white;
+box-shadow:-5px 0 15px rgba(0,0,0,0.2);
+padding:20px;
+transition:0.4s;
+overflow-y:auto;
+}
+
+.cart-section.active{
+right:0;
+}
+
+.cart-item{
+border-bottom:1px solid #eee;
+padding:10px 0;
+}
+
+.total{
+font-weight:bold;
+margin-top:15px;
+}
+
+@media(max-width:768px){
+.product-card{
+width:100%;
+}
+.cart-section{
+width:100%;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>FashionHub 🛍️</h1>
+<div class="cart-icon" onclick="toggleCart()">
+Cart (<span id="cartCount">0</span>)
+</div>
+</header>
+
+<div class="container">
+<div class="product-card">
+
+<img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab">
+
+<h2>Summer T-Shirt</h2>
+<p class="price">$40</p>
+<p>Available Stock: <span id="stock">5</span></p>
+
+<select id="size">
+<option value="">Select Size</option>
+<option value="S">S</option>
+<option value="M">M</option>
+<option value="L">L</option>
+<option value="XL">XL</option>
+</select>
+
+<input type="number" id="quantity" placeholder="Quantity">
+
+<button onclick="addToCart()">Add to Cart</button>
+
+<p id="message"></p>
+
+</div>
+</div>
+
+<div class="cart-section" id="cartSection">
+<h2>Your Cart</h2>
+<div id="cartItems"></div>
+<p class="total">Total: $<span id="total">0</span></p>
+<button onclick="checkout()">Checkout</button>
+</div>
+
+<script>
+
+let cart = [];
+let stock = 5;
+const price = 40;
+
+function toggleCart(){
+document.getElementById("cartSection").classList.toggle("active");
+}
+
+function addToCart(){
+
+let size = document.getElementById("size").value;
+let quantity = document.getElementById("quantity").value;
+let message = document.getElementById("message");
+
+// BUG 1: No validation for empty size
+
+// BUG 2: No validation for empty quantity
+
+// BUG 3: Allows negative quantity
+
+// BUG 4: Allows decimal quantity
+
+// BUG 5: Allows adding more than available stock
+
+// BUG 6: Stock decreases even if quantity invalid
+
+stock -= quantity;
+
+cart.push({size, quantity});
+
+// BUG 7: Cart count incorrect (counts items not total quantity)
+document.getElementById("cartCount").innerText = cart.length;
+
+// BUG 8: Total price calculated incorrectly (string multiplication issue)
+updateCart();
+
+document.getElementById("stock").innerText = stock;
+
+message.innerText="Added Successfully!";
+}
+
+function updateCart(){
+let cartItems = document.getElementById("cartItems");
+cartItems.innerHTML="";
+let total=0;
+
+cart.forEach((item,index)=>{
+let subtotal = item.quantity * price;
+
+// BUG 9: No validation for invalid subtotal
+// BUG 10: Remove button restores wrong stock amount
+
+cartItems.innerHTML += `
+<div class="cart-item">
+Size: ${item.size}<br>
+Quantity: ${item.quantity}<br>
+Subtotal: $${subtotal}
+<button onclick="removeItem(${index})">Remove</button>
+</div>
+`;
+
+total += subtotal;
+});
+
+document.getElementById("total").innerText = total;
+}
+
+function removeItem(index){
+
+// BUG 11: Stock not restored properly
+cart.splice(index,1);
+
+// BUG 12: Cart count not updated after remove
+updateCart();
+}
+
+function checkout(){
+
+// BUG 13: Allows checkout with empty cart
+
+alert("Order placed successfully!");
+
+// BUG 14: Cart not cleared after checkout
+
+// BUG 15: Stock not reset logic missing
+}
+
+</script>
+
+</body>
+</html>
